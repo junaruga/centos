@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -xe
 
 cd "$(readlink -f "$(dirname "$BASH_SOURCE")")"
 
