@@ -13,8 +13,8 @@ addons:
             - libguestfs-tools
 env:
     global:
-      - LIBGUESTFS_DEBUG=1
-      - LIBGUESTFS_TRACE=1
+        - LIBGUESTFS_DEBUG=1
+        - LIBGUESTFS_TRACE=1
     matrix:
         # Set available versions
         # https://wiki.centos.org/Manuals/ReleaseNotes
