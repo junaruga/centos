@@ -112,7 +112,14 @@ EOF
         docker tag $repo:$version-iso $repo:$tag-iso
     done
 
-    docker run -it --rm $repo:$version-iso uname -a
+    docker run -it --rm $repo:$version-iso bash -xc '
+        uname -a
+        echo
+        cat /etc/os-release 2>/dev/null
+        echo
+        cat /etc/redhat-release 2>/dev/null
+        true
+    '
 
     # build iso-cleanup image
     mkdir -p iso-clean
@@ -139,5 +146,12 @@ EOF
     for tag in $tags; do
         docker tag $repo:$version-clean $repo:$tag-clean
     done
-    docker run -it --rm $repo:$version-clean uname -a
+    docker run -it --rm $repo:$version-clean bash -xc '
+        uname -a
+        echo
+        cat /etc/os-release 2>/dev/null
+        echo
+        cat /etc/redhat-release 2>/dev/null
+        true
+    '
 done

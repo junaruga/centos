@@ -13,8 +13,9 @@ addons:
             - libguestfs-tools
 env:
     global:
-        - LIBGUESTFS_DEBUG=1
-        - LIBGUESTFS_TRACE=1
+        # Enable below environment variables for debug when virt-tar-out shows error.
+        # - LIBGUESTFS_DEBUG=1
+        # - LIBGUESTFS_TRACE=1
     matrix:
         # Set available versions
         # https://wiki.centos.org/Manuals/ReleaseNotes
@@ -30,4 +31,6 @@ before_install:
 
 script:
   # sudo is required for virt-tar-out in upsate.sh
+  - docker image ls
   - sudo ./update.sh "${VERSION}"
+  - docker image ls
