@@ -29,4 +29,5 @@ before_install:
   - docker run --rm --privileged multiarch/qemu-user-static:register
 
 script:
-  - ./update.sh "${VERSION}"
+  # sudo is required for virt-tar-out in upsate.sh
+  - sudo ./update.sh "${VERSION}"
