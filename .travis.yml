@@ -7,11 +7,9 @@ addons:
         config:
             retries: true
         update: true
-        sources:
-            - sourceline: 'deb http://archive.ubuntu.com/ubuntu bionic main universe'
         packages:
             # Install libguestfs-tools to use virt-tar-out command.
-            # https://packages.ubuntu.com/bionic/libguestfs-tools
+            # https://packages.ubuntu.com/xenial/libguestfs-tools
             - libguestfs-tools
 env:
     matrix:
