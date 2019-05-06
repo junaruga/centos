@@ -21,12 +21,17 @@ env:
         # https://wiki.centos.org/Manuals/ReleaseNotes
         # x86_64: http://cloud.centos.org/centos/7/images
         # others: http://mirror.centos.org/altarch/$VERSION/isos/$ARCH
-        - VERSION=7.2.1511-x86_64
-        - VERSION=7.3.1611-x86_64
-        - VERSION=7.3.1704-x86_64
+        # - VERSION=7.2.1511-x86_64
+        # - VERSION=7.3.1611-x86_64
+        # - VERSION=7.3.1704-x86_64
         - VERSION=7.5.1809-x86_64
         - VERSION=7.6.1811-x86_64
         - VERSION=7.6.1901-x86_64
+        - VERSION=7.6.1810-aarch64
+        - VERSION=7.6.1810-armhfp
+        - VERSION=7.6.1810-i386
+        - VERSION=7.6.1810-ppc64
+        - VERSION=7.6.1810-ppc64le
 
 before_install:
   - docker run --rm --privileged multiarch/qemu-user-static:register
