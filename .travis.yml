@@ -1,11 +1,16 @@
 dist: xenial
-sudo: required
 services:
   - docker
 language: bash
+env:
+    matrix:
+        - VERSION=7.2.1511-x86_64
+        - VERSION=7.3.1611-x86_64
+        - VERSION=7.3.1704-x86_64
+        - VERSION=7.6.1901-x86_64
 
 before_install:
   - docker run --rm --privileged multiarch/qemu-user-static:register
 
 script:
-  - ./update.sh
+  - ./update.sh "${VERSION}"
