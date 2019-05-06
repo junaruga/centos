@@ -58,6 +58,17 @@ for version in "${versions[@]}"; do
             virt-tar-out -a "${imgfilename}" / - > iso-slim/rootfs.tar
         fi
     fi
+    if [ "$(echo *.raw.xz)" != "*.raw.xz" ]; then
+        imgxzfilename="$(echo *.raw.xz)"
+        imgfilename="${imgxzfilename%.xz}"
+
+        if [ ! -f "${imgfilename}" ]; then
+            cat "${imgxzfilename}" | unxz > "${imgfilename}"
+        fi
+        if [ ! -f iso-slim/rootfs.tar ]; then
+            virt-tar-out -a "${imgfilename}" / - > iso-slim/rootfs.tar
+        fi
+    fi
     if [ "$(echo *.tar.xz)" != "*.tar.xz" ]; then
         xzfilename="$(echo *.tar.xz)"
         if [ ! -f iso-slim/rootfs.tar ]; then
