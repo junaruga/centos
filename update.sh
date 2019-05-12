@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -xeo pipefall
 
 cd "$(readlink -f "$(dirname "$BASH_SOURCE")")"
 
