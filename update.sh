@@ -47,8 +47,8 @@ for version in "${versions[@]}"; do
     mkdir -p iso-slim
 
     # create rootfs.tar
-    if [ "$(echo *.img.xz)" != "*.img.xz" ]; then
-        imgxzfilename="$(echo *.img.xz)"
+    if [[ $url =~ \.(img|raw)\.xz$ ]]; then
+        imgxzfilename="$(basename $url)"
         imgfilename="${imgxzfilename%.xz}"
 
         if [ ! -f "${imgfilename}" ]; then
@@ -58,33 +58,24 @@ for version in "${versions[@]}"; do
             virt-tar-out -a "${imgfilename}" / - > iso-slim/rootfs.tar
         fi
     fi
-    if [ "$(echo *.raw.xz)" != "*.raw.xz" ]; then
-        imgxzfilename="$(echo *.raw.xz)"
-        imgfilename="${imgxzfilename%.xz}"
-
-        if [ ! -f "${imgfilename}" ]; then
-            cat "${imgxzfilename}" | unxz > "${imgfilename}"
-        fi
-        if [ ! -f iso-slim/rootfs.tar ]; then
-            virt-tar-out -a "${imgfilename}" / - > iso-slim/rootfs.tar
-        fi
-    fi
-    if [ "$(echo *.tar.xz)" != "*.tar.xz" ]; then
-        xzfilename="$(echo *.tar.xz)"
+    if [[ $url =~ \.tar\.xz$ ]]; then
+        xzfilename="$(basename $url)"
         if [ ! -f iso-slim/rootfs.tar ]; then
             cat "${xzfilename}" | unxz > iso-slim/rootfs.tar
         fi
     fi
-    if [ "$(echo *.qcow2)" != "*.qcow2" ]; then
-        qcow2filename="$(echo *.qcow2)"
+    if [[ $url =~ \.(qcow2|iso)$ ]]; then
+        filename="$(basename $url)"
         if [ ! -f iso-slim/rootfs.tar ]; then
-            virt-tar-out -a "${qcow2filename}" / - > iso-slim/rootfs.tar
-        fi
-    fi
-    if [ "$(echo *.iso)" != "*.iso" ]; then
-        isofilename="$(echo *.iso)"
-        if [ ! -f iso-slim/rootfs.tar ]; then
-            virt-tar-out -a "${isofilename}" / - > iso-slim/rootfs.tar
+            # Use guestfish directly because of virt-tar-out issue.
+            # https://github.com/libguestfs/libguestfs/issues/37
+            file_system=$(
+                guestfish -a CentOS-7-aarch64-Minimal-1810.iso --ro <<EOF | cut -d: -f 1
+                run
+                list-filesystems
+EOF
+)
+            guestfish --ro -a "${filename}" -m "${file_system}" tar-out / iso-slim/rootfs.tar
         fi
     fi
 
