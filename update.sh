@@ -123,6 +123,7 @@ EOF
         docker tag $repo:$version-iso $repo:$tag-iso
     done
 
+    docker run -it --rm $repo:$version-iso uname -a
     docker run -it --rm $repo:$version-iso bash -xc '
         uname -a
         echo
@@ -157,6 +158,7 @@ EOF
     for tag in $tags; do
         docker tag $repo:$version-clean $repo:$tag-clean
     done
+    docker run -it --rm $repo:$version-clean uname -a
     docker run -it --rm $repo:$version-clean bash -xc '
         uname -a
         echo
