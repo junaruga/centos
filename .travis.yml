@@ -38,5 +38,7 @@ install: docker build --rm -t ci/centos .
 #   - docker images
 
 script: |
-  docker run --rm -t -w "/work" -v "$(pwd):/work" \
+  docker run --rm -t -w "/work" \
+    -v "$(pwd):/work" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
     -e VERSION="${VERSION}" ci/centos ./cmd.sh
