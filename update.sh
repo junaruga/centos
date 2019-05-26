@@ -111,6 +111,7 @@ EOF
     cat > iso/Dockerfile <<EOF
 FROM scratch
 ADD rootfs.tar /
+RUN echo "ARCH: #{ARCH} QEMU_ARCH: #{QEMU_ARCH}"
 ENV ARCH=${scw_arch} CENTOS_VERSION=${centos_version} DOCKER_REPO=${repo} CENTOS_IMAGE_URL=${url} QEMU_ARCH=${qemu_arch}
 
 EOF
@@ -129,6 +130,10 @@ EOF
         docker tag $repo:$version-iso $repo:$tag-iso
     done
 
+    docker run -it --rm $repo:$version-iso bash -xc '
+        uname -a
+        true
+    '
     docker run -it --rm $repo:$version-iso bash -xc '
         uname -a
         echo
