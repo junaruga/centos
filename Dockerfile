@@ -1,10 +1,8 @@
 FROM fedora
 
-WORKDIR /build
-COPY . .
-
-RUN dnf -y update && \
-  dnf -y --allowerasing install \
+RUN echo -e "deltarpm=0\ninstall_weak_deps=0\ntsflags=nodocs" >> /etc/dnf/dnf.conf
+RUN dnf -y update
+RUN dnf -y --allowerasing install \
     libguestfs-tools-c \
-    podman
-RUN alias docker=podman
+    podman \
+    && dnf clean all
