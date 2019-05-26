@@ -47,7 +47,7 @@ for version in "${versions[@]}"; do
         wget -N $url
     fi
 
-    mkdir -p iso-slim
+    mkdir -p iso
 
     # create rootfs.tar
     # Minimaize used sudo scope.
@@ -63,29 +63,29 @@ for version in "${versions[@]}"; do
         if [ ! -f "${imgfilename}" ]; then
             cat "${imgxzfilename}" | unxz > "${imgfilename}"
         fi
-        if [ ! -f iso-slim/rootfs.tar ]; then
+        if [ ! -f iso/rootfs.tar ]; then
 
-            sudo virt-tar-out -a "${imgfilename}" / iso-slim/rootfs.tar
+            sudo virt-tar-out -a "${imgfilename}" / iso/rootfs.tar
             user_name=$(id -un)
             group_name=$(id -gn)
-            sudo chown ${user_name}:${group_name} iso-slim/rootfs.tar
+            sudo chown ${user_name}:${group_name} iso/rootfs.tar
         fi
     elif [[ $url =~ \.tar\.xz$ ]]; then
         xzfilename="$(basename $url)"
-        if [ ! -f iso-slim/rootfs.tar ]; then
-            cat "${xzfilename}" | unxz > iso-slim/rootfs.tar
+        if [ ! -f iso/rootfs.tar ]; then
+            cat "${xzfilename}" | unxz > iso/rootfs.tar
         fi
     elif [[ $url =~ \.qcow2$ ]]; then
         filename="$(basename $url)"
-        if [ ! -f iso-slim/rootfs.tar ]; then
-            sudo virt-tar-out -a "${filename}" / iso-slim/rootfs.tar
+        if [ ! -f iso/rootfs.tar ]; then
+            sudo virt-tar-out -a "${filename}" / iso/rootfs.tar
             user_name=$(id -un)
             group_name=$(id -gn)
-            sudo chown ${user_name}:${group_name} iso-slim/rootfs.tar
+            sudo chown ${user_name}:${group_name} iso/rootfs.tar
         fi
     elif [[ $url =~ \.iso$ ]]; then
         filename="$(basename $url)"
-        if [ ! -f iso-slim/rootfs.tar ]; then
+        if [ ! -f iso/rootfs.tar ]; then
             # Use guestfish directly because of virt-tar-out issue for iso file.
             # https://github.com/libguestfs/libguestfs/issues/37
             # https://www.redhat.com/archives/libguestfs/2019-May/msg00019.html
@@ -95,46 +95,33 @@ for version in "${versions[@]}"; do
                 list-filesystems
 EOF
 )
-            sudo guestfish --ro -a "${filename}" -m "${file_system}" tar-out / iso-slim/rootfs.tar
+            sudo guestfish --ro -a "${filename}" -m "${file_system}" tar-out / iso/rootfs.tar
             user_name=$(id -un)
             group_name=$(id -gn)
-            sudo chown ${user_name}:${group_name} iso-slim/rootfs.tar
+            sudo chown ${user_name}:${group_name} iso/rootfs.tar
         fi
     fi
     if [ -n "${repo_in}" ]; then
         # Get from container repository.
         docker pull "${repo_in}"
-        docker save -o iso-slim/rootfs.tar "${repo_in}"
+        docker save -o iso/rootfs.tar "${repo_in}"
     fi
 
-    # create iso-slim dockerfile
-    cat > iso-slim/Dockerfile <<EOF
+    # create iso dockerfile
+    cat > iso/Dockerfile <<EOF
 FROM scratch
 ADD rootfs.tar /
 ENV ARCH=${scw_arch} CENTOS_VERSION=${centos_version} DOCKER_REPO=${repo} CENTOS_IMAGE_URL=${url} QEMU_ARCH=${qemu_arch}
 
 EOF
-
-    ## build iso-slim image
-    docker build -t $repo:$version-iso-slim iso-slim
-    for tag in $tags; do
-        docker tag $repo:$version-iso-slim $repo:$tag-iso-slim
-    done
-
     # create iso dockerfile
-    mkdir -p iso
     if [ -n "${qemu_arch}" -a ! -f "iso/qemu-${qemu_arch}-static" ]; then
-        wget https://github.com/multiarch/qemu-user-static/releases/download/v3.1.0-3/qemu-${qemu_arch}-static -O "iso/qemu-${qemu_arch}-static"
-        chmod +x "iso/qemu-${qemu_arch}-static"
+        wget https://github.com/multiarch/qemu-user-static/releases/download/v3.1.0-3/x86_64_qemu-${qemu_arch}-static.tar.gz -O "iso/x86_64_qemu-${qemu_arch}-static.tar.gz"
     fi
     if [ -n "${qemu_arch}" ]; then
-        cat > iso/Dockerfile <<EOF
-FROM $repo:$version-iso-slim
-ADD qemu-${qemu_arch}-static /usr/bin
-EOF
-    else
-        cat > iso/Dockerfile <<EOF
-FROM $repo:$version-iso-slim
+        cat >> iso/Dockerfile <<EOF
+
+ADD x86_64_qemu-${qemu_arch}-static.tar.gz /usr/bin
 EOF
     fi
     docker build -t $repo:$version-iso iso
