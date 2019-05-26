@@ -116,12 +116,13 @@ ADD rootfs.tar /
 EOF
     # create iso dockerfile
     if [ -n "${qemu_arch}" -a ! -f "iso/qemu-${qemu_arch}-static" ]; then
-        wget https://github.com/multiarch/qemu-user-static/releases/download/v3.1.0-3/x86_64_qemu-${qemu_arch}-static.tar.gz -O "iso/x86_64_qemu-${qemu_arch}-static.tar.gz"
+        wget https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0/qemu-${qemu_arch}-static -O "iso/qemu-${qemu_arch}-static"
+        chmod +x "iso/qemu-${qemu_arch}-static"
     fi
     if [ -n "${qemu_arch}" ]; then
         cat >> iso/Dockerfile <<EOF
 
-ADD x86_64_qemu-${qemu_arch}-static.tar.gz /usr/bin
+ADD qemu-${qemu_arch}-static /usr/bin
 EOF
     fi
     docker build -t $repo:$version-iso iso
