@@ -39,4 +39,4 @@ install: docker build --rm -t ci/centos .
 
 script: |
   docker run --rm -t -w "/work" -v "$(pwd):/work" \
-    -e VERSION="${VERSION}" ci/centos cmd.sh
+    -e VERSION="${VERSION}" ci/centos ./cmd.sh
