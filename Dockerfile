@@ -6,4 +6,5 @@ RUN dnf -y --allowerasing install \
     libguestfs-tools-c \
     docker \
     podman \
+    wget \
     && dnf clean all
