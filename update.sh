@@ -33,7 +33,8 @@ repo="$(get_part . repo)"
 for version in "${versions[@]}"; do
     version="${version%/}"
     dir="$(readlink -f "$version")"
-    url="$(get_part "$dir" url)"
+    url="$(get_part "$dir" url "")"
+    repo_in="$(get_part "$dir" repo_in "")"
     tags="$(get_part "$dir" tags)"
     centos_version="$(get_part "$dir" version)"
     arch="$(get_part "$dir" arch)"
@@ -42,7 +43,9 @@ for version in "${versions[@]}"; do
     cd "$dir"
 
     # fetch image
-    wget -N $url
+    if [ -n "${url}" ]; then
+        wget -N $url
+    fi
 
     mkdir -p iso-slim
 
@@ -97,10 +100,11 @@ EOF
             group_name=$(id -gn)
             sudo chown ${user_name}:${group_name} iso-slim/rootfs.tar
         fi
-    else
+    fi
+    if [ -n "${repo_in}" ]; then
         # Get from container repository.
-        docker pull "${url}"
-        docker save -o iso-slim/rootfs.tar "${url}"
+        docker pull "${repo_in}"
+        docker save -o iso-slim/rootfs.tar "${repo_in}"
     fi
 
     # create iso-slim dockerfile
