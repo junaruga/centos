@@ -29,9 +29,12 @@ env:
         - VERSION=7.6.1810-ppc64
         - VERSION=7.6.1810-ppc64le
 
-before_install:
-  - docker run --rm --privileged multiarch/qemu-user-static:register
+# before_install:
+#   - docker run --rm --privileged multiarch/qemu-user-static:register
+install: docker build --rm -t ci/centos .
 
-script:
-  - ./update.sh "${VERSION}"
-  - docker images
+# script:
+#   - ./update.sh "${VERSION}"
+#   - docker images
+
+script: docker run --rm -t -e VERSION="${VERSION}" ci/centos cmd.sh
