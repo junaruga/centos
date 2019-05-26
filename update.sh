@@ -67,14 +67,12 @@ for version in "${versions[@]}"; do
             group_name=$(id -gn)
             sudo chown ${user_name}:${group_name} iso-slim/rootfs.tar
         fi
-    fi
-    if [[ $url =~ \.tar\.xz$ ]]; then
+    elif [[ $url =~ \.tar\.xz$ ]]; then
         xzfilename="$(basename $url)"
         if [ ! -f iso-slim/rootfs.tar ]; then
             cat "${xzfilename}" | unxz > iso-slim/rootfs.tar
         fi
-    fi
-    if [[ $url =~ \.qcow2$ ]]; then
+    elif [[ $url =~ \.qcow2$ ]]; then
         filename="$(basename $url)"
         if [ ! -f iso-slim/rootfs.tar ]; then
             sudo virt-tar-out -a "${filename}" / iso-slim/rootfs.tar
@@ -82,8 +80,7 @@ for version in "${versions[@]}"; do
             group_name=$(id -gn)
             sudo chown ${user_name}:${group_name} iso-slim/rootfs.tar
         fi
-    fi
-    if [[ $url =~ \.iso$ ]]; then
+    elif [[ $url =~ \.iso$ ]]; then
         filename="$(basename $url)"
         if [ ! -f iso-slim/rootfs.tar ]; then
             # Use guestfish directly because of virt-tar-out issue for iso file.
@@ -100,6 +97,10 @@ EOF
             group_name=$(id -gn)
             sudo chown ${user_name}:${group_name} iso-slim/rootfs.tar
         fi
+    else
+        # Get from container repository.
+        docker pull "${url}"
+        docker save -o iso-slim/rootfs.tar "${url}"
     fi
 
     # create iso-slim dockerfile
