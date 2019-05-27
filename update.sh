@@ -65,10 +65,10 @@ for version in "${versions[@]}"; do
         fi
         if [ ! -f iso/rootfs.tar ]; then
 
-            sudo virt-tar-out -a "${imgfilename}" / iso/rootfs.tar
-            user_name=$(id -un)
-            group_name=$(id -gn)
-            sudo chown ${user_name}:${group_name} iso/rootfs.tar
+            virt-tar-out -a "${imgfilename}" / iso/rootfs.tar
+            # user_name=$(id -un)
+            # group_name=$(id -gn)
+            # sudo chown ${user_name}:${group_name} iso/rootfs.tar
         fi
     elif [[ $url =~ \.tar\.xz$ ]]; then
         xzfilename="$(basename $url)"
@@ -78,10 +78,10 @@ for version in "${versions[@]}"; do
     elif [[ $url =~ \.qcow2$ ]]; then
         filename="$(basename $url)"
         if [ ! -f iso/rootfs.tar ]; then
-            sudo virt-tar-out -a "${filename}" / iso/rootfs.tar
-            user_name=$(id -un)
-            group_name=$(id -gn)
-            sudo chown ${user_name}:${group_name} iso/rootfs.tar
+            virt-tar-out -a "${filename}" / iso/rootfs.tar
+            # user_name=$(id -un)
+            # group_name=$(id -gn)
+            # sudo chown ${user_name}:${group_name} iso/rootfs.tar
         fi
     elif [[ $url =~ \.iso$ ]]; then
         filename="$(basename $url)"
@@ -90,15 +90,15 @@ for version in "${versions[@]}"; do
             # https://github.com/libguestfs/libguestfs/issues/37
             # https://www.redhat.com/archives/libguestfs/2019-May/msg00019.html
             file_system=$(
-                sudo guestfish -a ${filename} --ro <<EOF | cut -d: -f 1
+                guestfish -a ${filename} --ro <<EOF | cut -d: -f 1
                 run
                 list-filesystems
 EOF
 )
-            sudo guestfish --ro -a "${filename}" -m "${file_system}" tar-out / iso/rootfs.tar
-            user_name=$(id -un)
-            group_name=$(id -gn)
-            sudo chown ${user_name}:${group_name} iso/rootfs.tar
+            guestfish --ro -a "${filename}" -m "${file_system}" tar-out / iso/rootfs.tar
+            # user_name=$(id -un)
+            # group_name=$(id -gn)
+            # sudo chown ${user_name}:${group_name} iso/rootfs.tar
         fi
     fi
     if [ -n "${repo_in}" ]; then
