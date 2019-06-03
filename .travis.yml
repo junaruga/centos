@@ -13,9 +13,11 @@ addons:
             - libguestfs-tools
 env:
     global:
-        - QEMU_VER=v3.1.0-3
-        - DOCKER_SERVER=docker.io
-        - DOCKER_REPO=$DOCKER_SERVER/multiarch/centos
+        - QEMU_VER=v4.0.0
+        # - DOCKER_SERVER=docker.io
+        # - DOCKER_REPO=$DOCKER_SERVER/multiarch/centos
+        - DOCKER_SERVER=quay.io
+        - DOCKER_REPO=$DOCKER_SERVER/junaruga/multiarch-centos
         # Enable below environment variables for debug when virt-tar-out shows error.
         # - LIBGUESTFS_DEBUG=1
         # - LIBGUESTFS_TRACE=1
@@ -39,6 +41,7 @@ before_install:
 script:
     - ./update.sh -v "${VERSION}" -u "${QEMU_VER}" -d "${DOCKER_REPO}"
     - docker images
+    - ./test.sh
 
 after_success:
     - |
